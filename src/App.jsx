@@ -71,16 +71,15 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/");
   };
 
   return (
     <Routes>
       <Route path="/" element={<OnboardingFlow />} />
-      <Route path="/login" element={<LoginScreen onLogin={(data) => console.log("Login:", data)} />} />
       <Route path="/oauth2/redirect" element={<OAuth2Handler />} />
       <Route path="/home" element={<UserDashboard tickets={tickets} onLogout={handleLogout} />} />
-      <Route path="/chamados/novo" element={<NovoChamado onSubmit={addTicket} />} />
+      <Route path="/chamados/novo" element={<NovoChamado onSubmit={addTicket} onLogout={handleLogout} />} />
     </Routes>
   );
 }
