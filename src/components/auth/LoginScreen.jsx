@@ -1,72 +1,144 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const FEATURES = [];
+
 export default function LoginScreen({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-const handleSubmit = (e) => {
-  e.preventDefault();
-  onLogin?.({ email, password });
-  navigate("/home");
-};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onLogin?.({ email, password });
+    navigate("/home");
+  };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-paper py-8 px-6">
-      <div className="w-full max-w-[360px] flex flex-col items-center text-center">
-        <img src="/kipper-logo.svg" alt="Kipper" className="w-13 h-13 mb-7" />
+    <div className="min-h-screen w-full flex bg-slate-100">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-8 py-16">
+        <div className="w-full max-w-sm">
+          <span className="font-body text-xs font-semibold text-amber-600 uppercase tracking-[0.2em]">
+            Acesso
+          </span>
+          <h1 className="font-serif text-4xl md:text-5xl text-slate-900 mt-3 mb-3 leading-[1.05]">
+            Bem-vindo <br />de volta
+          </h1>
+          <p className="font-body text-slate-500 text-base mb-10">
+            Entre para acompanhar seus chamados de manutenção.
+          </p>
 
-        <h1 className="font-heading font-bold text-[1.4rem] leading-[1.3] text-ink-strong mb-[0.4rem]">
-          Sistema de Manutenção Predial
-        </h1>
-        <p className="font-body text-[0.95rem] text-ink-faint mb-9">
-          Faça login na sua conta Kipper
-        </p>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="email" className="font-body text-sm text-slate-800 mb-1.5 block">
+                E-mail
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="email"
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3.5 font-body text-slate-800 outline-none transition focus:border-amber-600 focus:ring-4 focus:ring-amber-600/10"
+              />
+            </div>
 
-        <form className="w-full flex flex-col text-left" onSubmit={handleSubmit}>
-          <label className="font-body text-[0.8rem] font-medium text-ink-mid mb-[0.4rem]" htmlFor="email">
-            E-mail corporativo
-          </label>
-          <input
-            id="email"
-            type="email"
-            className="w-full py-3 px-[0.9rem] mb-5 border border-line rounded-lg bg-white font-body text-[0.95rem] text-ink-strong outline-none transition placeholder:text-placeholder focus:border-primary-end focus:shadow-[0_0_0_3px_rgba(133,89,43,0.14)]"
-            placeholder="nome@empresa.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="password" className="font-body text-sm text-slate-800">
+                  Senha
+                </label>
+                <a href="#" className="font-body text-xs text-slate-500 hover:text-amber-600 transition-colors">
+                  Esqueceu a senha?
+                </a>
+              </div>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3.5 font-body text-slate-800 outline-none transition focus:border-amber-600 focus:ring-4 focus:ring-amber-600/10"
+              />
+            </div>
 
-          <div className="flex justify-between items-center">
-            <label className="font-body text-[0.8rem] font-medium text-ink-mid mb-[0.4rem]" htmlFor="password">
-              Senha
-            </label>
-            <a href="#" className="font-body text-[0.78rem] text-ink-faint no-underline hover:text-primary-end">
-              Esqueceu a senha?
-            </a>
+            <button
+              type="submit"
+              className="w-full rounded-2xl bg-amber-600 text-white font-body font-semibold py-3.5 mt-4 transition hover:bg-amber-700 active:scale-[0.99]"
+            >
+              Entrar
+            </button>
+          </form>
+
+          <p className="font-body text-xs text-slate-500 mt-10 text-center">
+            Acesso exclusivo para colaboradores autorizados.
+          </p>
+        </div>
+      </div>
+
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-gradient-to-br from-amber-500 to-amber-900 items-center justify-center p-16">
+        <div
+          className="absolute inset-0 opacity-[0.07] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+                />
+
+        <div className="relative z-10 flex flex-col items-center text-center max-w-sm">
+          <h2 className="font-serif text-3xl text-white mb-4 leading-tight">
+            Manutenção,<br />sem complicação.
+          </h2>
+            <p className="font-serif text-sm text-white/80 text-left max-w-[260px] mb-10 leading-relaxed">
+              Centralizamos a abertura, o acompanhamento e a resolução dos seus
+              chamados — do pedido até a conclusão.
+            </p>
+
+          <div className="relative w-full max-w-[280px]">
+            <div className="absolute -top-6 -right-5 rotate-12 z-20">
+              <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center animate-[floatSoft_4s_ease-in-out_infinite]">
+                <span className="material-symbols-outlined text-white text-2xl">task_alt</span>
+              </div>
+            </div>
+
+            <div className="absolute -bottom-5 -left-6 -rotate-12 z-20">
+              <div className="w-12 h-12 rounded-full bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center animate-[floatSoft_5s_ease-in-out_infinite_0.6s]">
+                <span className="material-symbols-outlined text-white text-xl">build</span>
+              </div>
+            </div>
+
+            <div className="relative bg-white rounded-2xl shadow-2xl p-5 -rotate-2 text-left">
+              <div className="flex items-center justify-between mb-3">
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Em andamento
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono">#0512</span>
+              </div>
+              <p className="font-body text-sm font-semibold text-slate-800 mb-1">
+                Ar-condicionado — Sala 12
+              </p>
+              <p className="font-body text-xs text-slate-400 mb-3">
+                Técnico a caminho · previsão 40 min
+              </p>
+              <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full w-2/3 bg-amber-500 rounded-full" />
+              </div>
+            </div>
           </div>
-          <input
-            id="password"
-            type="password"
-            className="w-full py-3 px-[0.9rem] mb-5 border border-line rounded-lg bg-white font-body text-[0.95rem] text-ink-strong outline-none transition placeholder:text-placeholder focus:border-primary-end focus:shadow-[0_0_0_3px_rgba(133,89,43,0.14)]"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
 
-          <button
-            type="submit"
-            className="w-full py-[0.8rem] mt-2 rounded-lg bg-primary-end text-white font-heading font-semibold text-[0.95rem] cursor-pointer transition hover:bg-primary-end-hover active:bg-primary-end-active"
-          >
-            Entrar
-          </button>
-        </form>
-
-        <p className="font-body text-xs text-placeholder mt-8">
-          Acesso exclusivo para colaboradores autorizados.
-        </p>
+          <div className="flex flex-col gap-4 mt-6 w-full">
+            {FEATURES.map((f) => (
+              <div key={f.text} className="flex items-center gap-3 bg-white/10 rounded-2xl px-4 py-3 text-left backdrop-blur-sm">
+                <span className="material-symbols-outlined text-white/90 text-xl">{f.icon}</span>
+                <span className="font-body text-sm text-white/90">{f.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

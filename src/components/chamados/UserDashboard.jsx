@@ -1,137 +1,145 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AppShell from "../layout/AppShell";
 
-const STATUS_LABEL = {
-  aberto: "Em aberto",
-  andamento: "Em andamento",
-  externa: "Aguard. externa",
-  concluido: "Concluída",
-  finalizada: "Finalizada",
-  rejeitada: "Rejeitada",
+const STATUS_META = {
+  aberto: { label: "ABERTO", dotClass: "bg-error" },
+  andamento: { label: "ANDAMENTO", dotClass: "bg-primary animate-pulse" },
+  externa: { label: "AGUARD. EXTERNA", dotClass: "bg-tertiary" },
+  concluido: { label: "CONCLUÍDO", dotClass: "border border-on-surface-variant bg-transparent" },
+  finalizada: { label: "FINALIZADA", dotClass: "bg-on-surface-variant" },
+  rejeitada: { label: "REJEITADA", dotClass: "bg-error" },
 };
 
-const STATUS_STYLE = {
-  aberto: "bg-[#FFF4E0] text-[#B8730A]",
-  andamento: "bg-[#E2ECFF] text-[#2952CC]",
-  externa: "bg-[#F4E6FF] text-[#7A2EA6]",
-  concluido: "bg-[#E1F6E8] text-[#17803D]",
-  finalizada: "bg-[#E6E8EB] text-[#46505C]",
-  rejeitada: "bg-[#FDE5E5] text-[#C23B3B]",
-};
-
-function StatusBadge({ status }) {
-  return (
-    <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold ${STATUS_STYLE[status] ?? STATUS_STYLE.aberto}`}>
-      {STATUS_LABEL[status] ?? status}
-    </span>
-  );
-}
-
-const notificacoes = [
-  { texto: "Chamado #0512 foi atribuído a Carlos Lima e mudou para Em andamento.", data: "12/08/2026 11:40" },
-  { texto: "Carlos Lima comentou no Chamado #0512.", data: "13/08/2026 09:12" },
-  { texto: "⚠️ O supervisor marcou o Chamado #0509 como urgente.", data: "14/08/2026 08:05", urgente: true },
+const FILTERS = [
+  { key: "todos", label: "TODOS" },
+  { key: "aberto", label: "ABERTOS" },
+  { key: "andamento", label: "EM ANDAMENTO" },
+  { key: "concluido", label: "CONCLUÍDOS" },
 ];
 
 export default function UserDashboard({ tickets, onLogout }) {
-  const [showNotif, setShowNotif] = useState(false);
   const navigate = useNavigate();
+  const [filter, setFilter] = useState("todos");
+
+  const isDone = (t) => t.status === "concluido" || t.status === "finalizada";
+
+  const counts = {
+    todos: tickets.length,
+    aberto: tickets.filter((t) => t.status === "aberto").length,
+    andamento: tickets.filter((t) => t.status === "andamento").length,
+    concluido: tickets.filter(isDone).length,
+  };
+
+  const visibleTickets =
+    filter === "todos" ? tickets : filter === "concluido" ? tickets.filter(isDone) : tickets.filter((t) => t.status === filter);
+
+  const handleNovoChamado = () => {
+    sessionStorage.setItem("navegacaoInterna", "1");
+    navigate("/chamados/novo");
+  };
 
   return (
-    <div className="min-h-screen w-full bg-paper">
-      <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-line">
-        <h1 className="font-heading text-lg font-bold text-ink-strong">Kipper</h1>
-
-        <div className="flex items-center gap-4 relative">
-          <span className="font-body text-sm text-ink-mid">Ana Souza · Usuário comum</span>
-
+    <AppShell onLogout={onLogout}>
+      <div className="flex flex-col w-full px-8 md:px-16 py-12 gap-10">
+        <div className="flex flex-col md:flex-row justify-between md:items-end gap-6 w-full border-b border-outline-variant pb-4">
+          <div className="flex flex-col gap-2">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-on-surface uppercase tracking-tight">
+              Meus Chamados
+            </h1>
+            <p className="font-body text-sm text-on-surface-variant max-w-2xl">
+              Painel de acompanhamento e histórico de requisições de manutenção.
+            </p>
+          </div>
           <button
-            onClick={() => setShowNotif((v) => !v)}
-            className="relative border-0 bg-transparent cursor-pointer text-lg"
+            onClick={handleNovoChamado}
+            className="bg-primary text-on-primary px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest shadow-[4px_4px_0px_#3d2b1f] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_#3d2b1f] transition-all flex items-center gap-2 w-fit"
           >
-            🔔
-            <span className="absolute -top-1 -right-1.5 bg-danger text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-              {notificacoes.length}
-            </span>
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            Nova Requisição
           </button>
+        </div>
 
-          <button
-            onClick={onLogout}
-            className="font-body text-sm text-ink-faint border-0 bg-transparent cursor-pointer hover:text-danger"
-          >
-            Sair
-          </button>
+        <div className="flex gap-4 items-center flex-wrap">
+          <span className="font-mono text-xs text-on-surface-variant uppercase">Filtrar:</span>
+          <div className="flex gap-2 flex-wrap">
+            {FILTERS.map((f) => (
+              <button
+                key={f.key}
+                onClick={() => setFilter(f.key)}
+                className={`px-4 py-2 font-mono text-xs border transition-colors ${
+                  filter === f.key
+                    ? "bg-surface-container-high border-outline-variant text-on-surface shadow-[2px_2px_0px_rgba(61,43,31,0.2)]"
+                    : "bg-surface border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-low"
+                }`}
+              >
+                {f.label} ({counts[f.key]})
+              </button>
+            ))}
+          </div>
+        </div>
 
-          {showNotif && (
-            <div className="absolute top-10 right-0 w-80 bg-white border border-line rounded-lg shadow-lg p-3 z-20">
-              <div className="font-heading text-sm font-semibold text-ink-strong mb-2">Notificações</div>
-              {notificacoes.map((n, i) => (
-                <div key={i} className={`p-2 rounded-md mb-1 ${n.urgente ? "bg-[#FFF6F6]" : ""}`}>
-                  <p className="font-body text-[13px] text-ink-strong">{n.texto}</p>
-                  <p className="font-body text-[11px] text-ink-faint mt-0.5">{n.data}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {visibleTickets.map((t) => {
+            const meta = STATUS_META[t.status] ?? STATUS_META.aberto;
+            const done = isDone(t);
+            return (
+              <article
+                key={t.id}
+                className={`relative border p-6 flex flex-col gap-5 transition-all duration-300 ${
+                  done
+                    ? "bg-surface-container-low border-outline-variant/30 opacity-75 hover:opacity-100"
+                    : "bg-surface-container-lowest border-outline-variant/50 shadow-[4px_4px_0px_rgba(61,43,31,0.05)] hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(61,43,31,0.08)]"
+                }`}
+              >
+                <div className="flex justify-between items-start border-b border-outline-variant/30 pb-4">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 ${meta.dotClass}`} />
+                    <span className="font-mono text-[11px] text-on-surface-variant uppercase tracking-widest">
+                      [ {meta.label} ]
+                    </span>
+                  </div>
+                  <span className="font-mono text-[10px] text-on-surface-variant/70">{t.dataAbertura}</span>
                 </div>
-              ))}
+
+                <div className="flex flex-col gap-2 flex-grow">
+                  <h2
+                    className={`font-display text-lg font-semibold uppercase leading-tight line-clamp-2 ${
+                      done ? "text-on-surface/80 line-through decoration-outline-variant" : "text-on-surface"
+                    }`}
+                  >
+                    {t.titulo}
+                  </h2>
+                  <p className={`font-body text-sm line-clamp-3 ${done ? "text-on-surface-variant/80" : "text-on-surface-variant"}`}>
+                    {t.descricao}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 border-t border-outline-variant/30 pt-4">
+                  <div className="flex flex-col">
+                    <span className="font-mono text-[10px] text-on-surface-variant/70 uppercase">Tipo</span>
+                    <span className="font-mono text-xs text-on-surface truncate">{t.tipo}</span>
+                  </div>
+                  <div className="flex flex-col text-right">
+                    <span className="font-mono text-[10px] text-on-surface-variant/70 uppercase">Local</span>
+                    <span className="font-mono text-xs text-on-surface truncate">{t.local}</span>
+                  </div>
+                </div>
+
+                <div className="absolute bottom-6 right-6 opacity-30 pointer-events-none">
+                  <span className="font-mono text-xs text-on-surface-variant tracking-tighter">ID.#{t.id}</span>
+                </div>
+              </article>
+            );
+          })}
+
+          {visibleTickets.length === 0 && (
+            <div className="col-span-full border border-dashed border-outline-variant p-10 text-center">
+              <p className="font-body text-sm text-on-surface-variant">Nenhum chamado nesse filtro.</p>
             </div>
           )}
         </div>
-      </header>
-
-      <div className="max-w-3xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-heading text-xl font-bold text-ink-strong">Meus chamados</h2>
-            <button
-            onClick={() => {
-                sessionStorage.setItem("navegacaoInterna", "1");
-                navigate("/chamados/novo");
-            }}
-            className="bg-primary-end text-white font-heading font-semibold text-sm px-4 py-2 rounded-lg cursor-pointer transition hover:bg-primary-end-hover"
-            >
-            + Novo chamado
-            </button>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          {tickets.map((t) => (
-            <div
-              key={t.id}
-              className="bg-white border border-line rounded-xl p-5 cursor-pointer transition hover:shadow-md"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="font-body text-xs text-ink-faint">Chamado #{t.id}</p>
-                  <p className="font-heading text-base font-semibold text-ink-strong">{t.titulo}</p>
-                </div>
-                <StatusBadge status={t.status} />
-              </div>
-
-              <div className="flex flex-wrap gap-2 mt-3">
-                <span className="font-body text-xs text-ink-mid bg-paper border border-line rounded-full px-2.5 py-1">🔧 {t.tipo}</span>
-                <span className="font-body text-xs text-ink-mid bg-paper border border-line rounded-full px-2.5 py-1">📍 {t.local}</span>
-                {t.patrimonio && (
-                  <span className="font-body text-xs text-ink-mid bg-paper border border-line rounded-full px-2.5 py-1">🏷️ Patrimônio: {t.patrimonio}</span>
-                )}
-              </div>
-
-              <p className="font-body text-sm text-ink-mid mt-3">{t.descricao}</p>
-
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-line">
-                <div className="flex gap-1">
-                  {Array.from({ length: t.anexos || 0 }).map((_, i) => (
-                    <span key={i} className="text-base">🖼️</span>
-                  ))}
-                </div>
-                <span className="font-body text-xs text-ink-faint">
-                  Aberto em {t.dataAbertura} por {t.abertoPor} (ID {t.abertoPorId})
-                </span>
-              </div>
-            </div>
-          ))}
-
-          <div className="border border-dashed border-line rounded-xl p-8 text-center">
-            <p className="font-body text-sm text-ink-faint">Outros chamados aparecerão aqui</p>
-          </div>
-        </div>
       </div>
-    </div>
+    </AppShell>
   );
 }

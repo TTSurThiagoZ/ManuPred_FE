@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
 @theme {
+  /* ===== Onboarding (Splash / Introdução) ===== */
   --color-primary-start: #D4A72A;
   --color-primary-end: #85592B;
   --color-primary-end-hover: #6E4A22;
   --color-primary-end-active: #5F3F1D;
-  --color-on-primary: rgba(255, 255, 255, 0.8);
+  --color-on-primary-soft: rgba(255, 255, 255, 0.8);
 
   --color-ink: #14110C;
   --color-ink-soft: #F5F0E6;
@@ -20,17 +21,57 @@
   --color-danger: #C0392B;
 
   --font-heading: "Poppins", sans-serif;
-  --font-body: "Inter", sans-serif;
 
   --animate-pop: pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   --animate-wrench-turn: wrenchTurn 1.3s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   --animate-drift: drift 9s ease-in-out infinite;
   --animate-drift-reverse: drift 11s ease-in-out infinite reverse;
+
+  /* ===== Sistema de Chamados (Login / Dashboard / Novo Chamado) — Stitch ===== */
+  --color-surface: #fbf9f4;
+  --color-surface-dim: #dbdad5;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f3ee;
+  --color-surface-container: #f0eee9;
+  --color-surface-container-high: #eae8e3;
+  --color-surface-container-highest: #e4e2dd;
+  --color-on-surface: #1b1c19;
+  --color-on-surface-variant: #4e4639;
+  --color-outline: #7f7667;
+  --color-outline-variant: #d1c5b4;
+  --color-primary: #775a19;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #c5a059;
+  --color-on-primary-container: #4e3700;
+  --color-secondary: #705a4c;
+  --color-tertiary: #76592b;
+  --color-tertiary-container: #c3a06a;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-background: #fbf9f4;
+  --color-on-background: #1b1c19;
+
+  --font-display: "Chivo", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-cream: #F7F2E9;
+  --color-charcoal: #241F1A;
+  --color-stone: #8A8175;
+  --color-plum: #4A2545;
+  --color-plum-hover: #3A1C37;
+
+--font-serif: "Fraunces", serif;
 }
 
 @keyframes pop {
   from { transform: scale(0.7); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes floatSoft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes wrenchTurn {
@@ -43,8 +84,6 @@
   50% { transform: translate(-16px, 12px); }
 }
 
-/* Textura de ruído da Splash — a única coisa que fica fora de utilities,
-   porque uma imagem SVG inteira dentro de uma className ficaria ilegível */
 .splash-noise::before {
   content: "";
   position: absolute;
@@ -53,6 +92,21 @@
   opacity: 0.09;
   mix-blend-mode: overlay;
   pointer-events: none;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
 }
 
 html, body {
@@ -68,3 +122,4 @@ html, body {
 body {
   font-family: var(--font-body);
 }
+
