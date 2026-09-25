@@ -1,0 +1,84 @@
+# ========================================================
+# 1. CONFIGMAP (Variáveis de Ambiente do Frontend)
+# ========================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+data:
+  REACT_APP_API_URL: "http://localhost:8080" # URL para comunicar com o Backend
+---
+# ========================================================
+# 2. DEPLOYMENT DO FRONTEND
+# ========================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: frontend
+spec:
+  replicas: 2 # Define a quantidade inicial de Pods (ReplicaSet gerenciado)
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend-container
+        image: thiagofiec/manupred_fe:latest # Substitua pelo seu usuário no Docker Hub
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80 # Porta exposta pelo servidor Web (ex: Nginx)
+        envFrom:
+        - configMapRef:
+            name: frontend-config
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+---
+# ========================================================
+# 3. SERVICE DO FRONTEND (NodePort para acesso via Navegador)
+# ========================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  type: NodePort
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080 # Porta estática para acessar o Frontend no Minikube
+---
+# ========================================================
+# 4. HPA DO FRONTEND (Autoescala Horizontal de Pods)
+# ========================================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: frontend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontend-deployment
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
