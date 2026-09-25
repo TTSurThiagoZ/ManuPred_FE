@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: frontend-container
-        image: thiagofiec/manupred_fe:latest # Substitua pelo seu usuário no Docker Hub
+        image: thiagofiec/kipperfe:latest # Substitua pelo seu usuário no Docker Hub
         imagePullPolicy: Always
         ports:
         - containerPort: 80 # Porta exposta pelo servidor Web (ex: Nginx)
