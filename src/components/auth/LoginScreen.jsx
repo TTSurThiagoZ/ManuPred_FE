@@ -11,7 +11,7 @@ export default function LoginScreen({ onLogin }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     onLogin?.({ email, password });
-    navigate("/home");
+    navigate("/chamados");
   };
 
   return (
@@ -78,7 +78,7 @@ export default function LoginScreen({ onLogin }) {
         </div>
       </div>
 
-      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-gradient-to-br from-amber-500 to-amber-900 items-center justify-center p-16">
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-linear-to-br from-amber-500 to-amber-900 items-center justify-center p-16">
         <div
           className="absolute inset-0 opacity-[0.07] pointer-events-none"
           style={{
@@ -92,12 +92,12 @@ export default function LoginScreen({ onLogin }) {
           <h2 className="font-serif text-3xl text-white mb-4 leading-tight">
             Manutenção,<br />sem complicação.
           </h2>
-            <p className="font-serif text-sm text-white/80 text-left max-w-[260px] mb-10 leading-relaxed">
+            <p className="font-serif text-sm text-white/80 text-left max-w-65 mb-10 leading-relaxed">
               Centralizamos a abertura, o acompanhamento e a resolução dos seus
               chamados — do pedido até a conclusão.
             </p>
 
-          <div className="relative w-full max-w-[280px]">
+          <div className="relative w-full max-w-70">
             <div className="absolute -top-6 -right-5 rotate-12 z-20">
               <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center animate-[floatSoft_4s_ease-in-out_infinite]">
                 <span className="material-symbols-outlined text-white text-2xl">task_alt</span>

@@ -1,21 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppShell from "../layout/AppShell";
+import { goToNovoChamado } from "../../utils/navigation";
 
 const STATUS_META = {
-  aberto: { label: "ABERTO", dotClass: "bg-error" },
-  andamento: { label: "ANDAMENTO", dotClass: "bg-primary animate-pulse" },
-  externa: { label: "AGUARD. EXTERNA", dotClass: "bg-tertiary" },
-  concluido: { label: "CONCLUÍDO", dotClass: "border border-on-surface-variant bg-transparent" },
-  finalizada: { label: "FINALIZADA", dotClass: "bg-on-surface-variant" },
-  rejeitada: { label: "REJEITADA", dotClass: "bg-error" },
+  aberto: { label: "Em aberto", badge: "bg-amber-100 text-amber-700" },
+  andamento: { label: "Em andamento", badge: "bg-blue-100 text-blue-700" },
+  externa: { label: "Aguard. externa", badge: "bg-purple-100 text-purple-700" },
+  concluido: { label: "Concluído", badge: "bg-emerald-100 text-emerald-700" },
+  finalizada: { label: "Finalizada", badge: "bg-slate-100 text-slate-600" },
+  rejeitada: { label: "Rejeitada", badge: "bg-red-100 text-red-700" },
 };
 
 const FILTERS = [
-  { key: "todos", label: "TODOS" },
-  { key: "aberto", label: "ABERTOS" },
-  { key: "andamento", label: "EM ANDAMENTO" },
-  { key: "concluido", label: "CONCLUÍDOS" },
+  { key: "todos", label: "Todos" },
+  { key: "aberto", label: "Abertos" },
+  { key: "andamento", label: "Em andamento" },
+  { key: "concluido", label: "Concluídos" },
 ];
 
 export default function UserDashboard({ tickets, onLogout }) {
@@ -34,108 +35,87 @@ export default function UserDashboard({ tickets, onLogout }) {
   const visibleTickets =
     filter === "todos" ? tickets : filter === "concluido" ? tickets.filter(isDone) : tickets.filter((t) => t.status === filter);
 
-  const handleNovoChamado = () => {
-    sessionStorage.setItem("navegacaoInterna", "1");
-    navigate("/chamados/novo");
-  };
+  const handleNovoChamado = () => goToNovoChamado(navigate);
 
   return (
     <AppShell onLogout={onLogout}>
-      <div className="flex flex-col w-full px-8 md:px-16 py-12 gap-10">
-        <div className="flex flex-col md:flex-row justify-between md:items-end gap-6 w-full border-b border-outline-variant pb-4">
-          <div className="flex flex-col gap-2">
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-on-surface uppercase tracking-tight">
-              Meus Chamados
-            </h1>
-            <p className="font-body text-sm text-on-surface-variant max-w-2xl">
-              Painel de acompanhamento e histórico de requisições de manutenção.
+      <div className="flex flex-col w-full px-8 md:px-16 py-12 gap-10 max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between md:items-end gap-6 w-full">
+          <div>
+            <h1 className="font-serif text-4xl text-charcoal mb-2">Meus Chamados</h1>
+            <p className="font-body text-sm text-stone">
+              Acompanhe o andamento das suas solicitações de manutenção.
             </p>
           </div>
           <button
             onClick={handleNovoChamado}
-            className="bg-primary text-on-primary px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest shadow-[4px_4px_0px_#3d2b1f] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_#3d2b1f] transition-all flex items-center gap-2 w-fit"
+            className="bg-amber-600 text-white px-6 py-3 rounded-2xl font-body font-semibold text-sm shadow-sm hover:bg-amber-700 transition-colors flex items-center gap-2 w-fit"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
             Nova Requisição
           </button>
         </div>
 
-        <div className="flex gap-4 items-center flex-wrap">
-          <span className="font-mono text-xs text-on-surface-variant uppercase">Filtrar:</span>
-          <div className="flex gap-2 flex-wrap">
-            {FILTERS.map((f) => (
-              <button
-                key={f.key}
-                onClick={() => setFilter(f.key)}
-                className={`px-4 py-2 font-mono text-xs border transition-colors ${
-                  filter === f.key
-                    ? "bg-surface-container-high border-outline-variant text-on-surface shadow-[2px_2px_0px_rgba(61,43,31,0.2)]"
-                    : "bg-surface border-outline-variant/50 text-on-surface-variant hover:bg-surface-container-low"
-                }`}
-              >
-                {f.label} ({counts[f.key]})
-              </button>
-            ))}
-          </div>
+        <div className="flex gap-2 flex-wrap">
+          {FILTERS.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`px-4 py-2 rounded-full font-body text-sm transition-colors ${
+                filter === f.key
+                  ? "bg-charcoal text-white"
+                  : "bg-white text-stone border border-stone/15 hover:bg-cream"
+              }`}
+            >
+              {f.label} <span className="opacity-60">({counts[f.key]})</span>
+            </button>
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {visibleTickets.map((t) => {
             const meta = STATUS_META[t.status] ?? STATUS_META.aberto;
             const done = isDone(t);
             return (
               <article
                 key={t.id}
-                className={`relative border p-6 flex flex-col gap-5 transition-all duration-300 ${
-                  done
-                    ? "bg-surface-container-low border-outline-variant/30 opacity-75 hover:opacity-100"
-                    : "bg-surface-container-lowest border-outline-variant/50 shadow-[4px_4px_0px_rgba(61,43,31,0.05)] hover:-translate-y-1 hover:shadow-[8px_8px_0px_rgba(61,43,31,0.08)]"
+                className={`bg-white rounded-2xl border border-stone/10 p-6 flex flex-col gap-4 transition-all ${
+                  done ? "opacity-70 hover:opacity-100" : "shadow-sm hover:shadow-md hover:-translate-y-0.5"
                 }`}
               >
-                <div className="flex justify-between items-start border-b border-outline-variant/30 pb-4">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 ${meta.dotClass}`} />
-                    <span className="font-mono text-[11px] text-on-surface-variant uppercase tracking-widest">
-                      [ {meta.label} ]
-                    </span>
-                  </div>
-                  <span className="font-mono text-[10px] text-on-surface-variant/70">{t.dataAbertura}</span>
+                <div className="flex items-start justify-between gap-3">
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${meta.badge}`}>
+                    {meta.label}
+                  </span>
+                  <span className="font-body text-xs text-stone/70 shrink-0">{t.dataAbertura}</span>
                 </div>
 
-                <div className="flex flex-col gap-2 flex-grow">
-                  <h2
-                    className={`font-display text-lg font-semibold uppercase leading-tight line-clamp-2 ${
-                      done ? "text-on-surface/80 line-through decoration-outline-variant" : "text-on-surface"
-                    }`}
-                  >
+                <div>
+                  <h2 className={`font-serif text-lg text-charcoal leading-snug mb-1 ${done ? "line-through decoration-stone/40" : ""}`}>
                     {t.titulo}
                   </h2>
-                  <p className={`font-body text-sm line-clamp-3 ${done ? "text-on-surface-variant/80" : "text-on-surface-variant"}`}>
-                    {t.descricao}
-                  </p>
+                  <p className="font-body text-sm text-stone line-clamp-2">{t.descricao}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 border-t border-outline-variant/30 pt-4">
-                  <div className="flex flex-col">
-                    <span className="font-mono text-[10px] text-on-surface-variant/70 uppercase">Tipo</span>
-                    <span className="font-mono text-xs text-on-surface truncate">{t.tipo}</span>
-                  </div>
-                  <div className="flex flex-col text-right">
-                    <span className="font-mono text-[10px] text-on-surface-variant/70 uppercase">Local</span>
-                    <span className="font-mono text-xs text-on-surface truncate">{t.local}</span>
-                  </div>
+                <div className="flex flex-wrap gap-2 mt-auto pt-3 border-t border-stone/10">
+                  <span className="font-body text-xs text-stone bg-cream rounded-full px-3 py-1">
+                    🔧 {t.tipo}
+                  </span>
+                  <span className="font-body text-xs text-stone bg-cream rounded-full px-3 py-1">
+                    📍 {t.local}
+                  </span>
                 </div>
 
-                <div className="absolute bottom-6 right-6 opacity-30 pointer-events-none">
-                  <span className="font-mono text-xs text-on-surface-variant tracking-tighter">ID.#{t.id}</span>
-                </div>
+                <p className="font-body text-[11px] text-stone/60">
+                  #{t.id} · aberto por {t.abertoPor}
+                </p>
               </article>
             );
           })}
 
           {visibleTickets.length === 0 && (
-            <div className="col-span-full border border-dashed border-outline-variant p-10 text-center">
-              <p className="font-body text-sm text-on-surface-variant">Nenhum chamado nesse filtro.</p>
+            <div className="col-span-full border border-dashed border-stone/20 rounded-2xl p-12 text-center bg-white/50">
+              <p className="font-body text-sm text-stone">Nenhum chamado nesse filtro.</p>
             </div>
           )}
         </div>
