@@ -10,7 +10,7 @@ export default function OAuth2Handler() {
 
     if (token) {
       localStorage.setItem("token", token);
-      navigate("/home", { replace: true });
+      navigate("/chamados", { replace: true });
     } else {
       navigate("/login", { replace: true });
     }

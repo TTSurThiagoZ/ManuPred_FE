@@ -6,6 +6,8 @@ import LoginScreen from "./components/auth/LoginScreen";
 import OAuth2Handler from "./components/auth/OAuth2Handler";
 import UserDashboard from "./components/chamados/UserDashboard";
 import NovoChamado from "./components/chamados/NovoChamado";
+import AdminChamados from "./components/admin/AdminChamados";
+import AdminUsuarios from "./components/admin/AdminUsuarios";
 
 function OnboardingFlow() {
   const [stage, setStage] = useState("splash");
@@ -78,8 +80,10 @@ function App() {
     <Routes>
       <Route path="/" element={<OnboardingFlow />} />
       <Route path="/oauth2/redirect" element={<OAuth2Handler />} />
-      <Route path="/home" element={<UserDashboard tickets={tickets} onLogout={handleLogout} />} />
+      <Route path="/chamados" element={<UserDashboard tickets={tickets} onLogout={handleLogout} />} />
       <Route path="/chamados/novo" element={<NovoChamado onSubmit={addTicket} onLogout={handleLogout} />} />
+      <Route path="/admin/chamados" element={<AdminChamados onLogout={handleLogout} />} />
+      <Route path="/admin/usuarios" element={<AdminUsuarios onLogout={handleLogout} />} />
     </Routes>
   );
 }

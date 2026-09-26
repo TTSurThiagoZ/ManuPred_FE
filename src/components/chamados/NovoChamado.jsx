@@ -6,8 +6,9 @@ const TIPOS = ["Hidráulico", "Elétrico", "Ar-condicionado", "Mobiliário", "Li
 const LOCAIS = ["Sala 1", "Sala 2", "Sala 40", "Refeitório", "Inspetoria", "Banheiro", "Corredor"];
 
 const fieldClass =
-  "w-full py-2.5 px-3 bg-surface-container-lowest border border-outline-variant font-mono text-sm text-on-surface outline-none transition focus:border-primary";
-const labelClass = "font-mono text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1.5 block";
+  "w-full py-3 px-4 bg-white border border-stone/20 rounded-2xl font-body text-sm text-charcoal outline-none transition focus:border-amber-600 focus:ring-4 focus:ring-amber-600/10";
+const labelClass = "font-body text-sm text-charcoal mb-1.5 block";
+const sectionLabelClass = "font-body text-xs font-semibold text-amber-700 uppercase tracking-wider mb-4 pb-2 border-b border-stone/10";
 
 export default function NovoChamado({ onSubmit, onLogout }) {
   const navigate = useNavigate();
@@ -39,36 +40,30 @@ export default function NovoChamado({ onSubmit, onLogout }) {
   return (
     <AppShell onLogout={onLogout}>
       <div className="max-w-3xl mx-auto px-8 py-12">
-        <div className="flex items-center justify-between mb-8 border-b border-outline-variant pb-4">
-          <h1 className="font-display text-2xl font-bold text-on-surface uppercase tracking-tight">
-            Abrir Novo Chamado
-          </h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="font-serif text-3xl text-charcoal">Abrir novo chamado</h1>
           <button
             onClick={() => navigate("/home")}
-            className="font-mono text-xs text-on-surface-variant border border-outline-variant px-3 py-1.5 hover:bg-surface-container-low transition-colors"
+            className="font-body text-sm text-stone bg-white border border-stone/20 rounded-2xl px-4 py-2 hover:bg-cream transition-colors"
           >
             ← Voltar
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-surface-container-lowest border border-outline-variant p-6 md:p-8">
-          <p className="font-mono text-[10px] font-bold text-primary uppercase tracking-widest mb-4 pb-2 border-b border-outline-variant/50">
-            Dados do Solicitante
-          </p>
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-stone/10 shadow-sm p-6 md:p-8">
+          <p className={sectionLabelClass}>Dados do solicitante</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <div>
               <label className={labelClass}>Nome do usuário</label>
-              <input className={`${fieldClass} opacity-60`} value="Ana Souza" readOnly />
+              <input className={`${fieldClass} bg-cream/50 text-stone`} value="Ana Souza" readOnly />
             </div>
             <div>
               <label className={labelClass}>ID do usuário</label>
-              <input className={`${fieldClass} opacity-60`} value="1043" readOnly />
+              <input className={`${fieldClass} bg-cream/50 text-stone`} value="1043" readOnly />
             </div>
           </div>
 
-          <p className="font-mono text-[10px] font-bold text-primary uppercase tracking-widest mb-4 pb-2 border-b border-outline-variant/50">
-            Detalhes do Problema
-          </p>
+          <p className={sectionLabelClass}>Detalhes do problema</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className={labelClass}>Tipo de chamado</label>
@@ -87,7 +82,7 @@ export default function NovoChamado({ onSubmit, onLogout }) {
             <div className="md:col-span-2">
               <label className={labelClass}>Descrição do problema</label>
               <textarea
-                className={`${fieldClass} min-h-[100px] resize-y`}
+                className={`${fieldClass} min-h-[110px] resize-y`}
                 placeholder="Descreva o problema com detalhes..."
                 value={descricao}
                 onChange={(e) => setDescricao(e.target.value)}
@@ -96,33 +91,33 @@ export default function NovoChamado({ onSubmit, onLogout }) {
             </div>
             <div>
               <label className={labelClass}>
-                Nº de patrimônio <span className="normal-case font-normal text-on-surface-variant/70">(opcional)</span>
+                Nº de patrimônio <span className="text-stone/70 font-normal">(opcional)</span>
               </label>
               <input className={fieldClass} placeholder="Ex: 4821" value={patrimonio} onChange={(e) => setPatrimonio(e.target.value)} />
             </div>
           </div>
 
-          <p className="font-mono text-[10px] font-bold text-primary uppercase tracking-widest mb-4 pb-2 border-b border-outline-variant/50">
-            Anexos <span className="normal-case font-normal text-on-surface-variant/70">(opcional)</span>
+          <p className={sectionLabelClass}>
+            Anexos <span className="normal-case font-normal text-stone/70">(opcional)</span>
           </p>
-          <div className="border border-dashed border-outline-variant p-6 text-center font-body text-sm text-on-surface-variant cursor-pointer hover:border-primary transition-colors mb-8">
+          <div className="border-2 border-dashed border-stone/25 rounded-2xl p-8 text-center font-body text-sm text-stone cursor-pointer hover:border-amber-600 hover:bg-cream/40 transition-colors mb-8">
             <span className="material-symbols-outlined align-middle mr-2 text-[18px]">attach_file</span>
             Clique ou arraste fotos/arquivos do problema
           </div>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-outline-variant">
+          <div className="flex justify-end gap-3 pt-6 border-t border-stone/10">
             <button
               type="button"
               onClick={() => navigate("/home")}
-              className="font-mono text-xs font-bold uppercase tracking-widest border border-outline-variant px-5 py-3 hover:bg-surface-container-low transition-colors"
+              className="font-body text-sm font-semibold text-charcoal bg-white border border-stone/20 rounded-2xl px-5 py-3 hover:bg-cream transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="relative bg-primary text-on-primary font-mono text-xs font-bold uppercase tracking-widest px-6 py-3 shadow-[4px_4px_0px_#3d2b1f] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_#3d2b1f] transition-all"
+              className="font-body text-sm font-semibold bg-amber-600 text-white rounded-2xl px-6 py-3 shadow-sm hover:bg-amber-700 transition-colors"
             >
-              Enviar Chamado
+              Enviar chamado
             </button>
           </div>
         </form>
