@@ -1,24 +1,15 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { goToNovoChamado } from "../../utils/navigation";
-
-const NAV_ITEMS = [
-  { icon: "dashboard", label: "Meus Chamados", path: "/chamados" },
-  { icon: "add_box", label: "Novo Chamado", path: "/chamados/novo" },
-  { divider: true },
-  { icon: "engineering", label: "Dashboard Técnico", path: null },
-  { icon: "view_kanban", label: "Kanban", path: null },
-  { icon: "task_alt", label: "Concluídos", path: null },
-  { divider: true },
-  { icon: "admin_panel_settings", label: "Dashboard Admin", path: "/admin/chamados" },
-  { icon: "group", label: "Usuários", path: "/admin/usuarios" },
-  { icon: "monitoring", label: "Relatórios", path: null },
-];
+import { ROLES, getStoredRole } from "../../utils/roles";
 
 export default function AppShell({ children, onLogout, userName = "Ana Souza", userRole = "Usuário comum" }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
+
+  const roleKey = getStoredRole() || "usuario";
+  const navItems = ROLES[roleKey]?.nav ?? ROLES.usuario.nav;
 
   const handleNavClick = (path) => {
     if (!path) return;
@@ -34,7 +25,7 @@ export default function AppShell({ children, onLogout, userName = "Ana Souza", u
       <aside className="fixed left-0 top-0 h-full w-20 bg-white border-r border-stone/15 z-50 flex flex-col items-center py-6">
         <img src="/kipper-logo.svg" alt="Kipper" className="w-8 h-8 mb-6" />
         <nav className="flex flex-col gap-3 w-full px-3">
-          {NAV_ITEMS.map((item, i) =>
+          {navItems.map((item, i) =>
             item.divider ? (
               <div key={i} className="h-px w-8 bg-stone/15 mx-auto my-2" />
             ) : (

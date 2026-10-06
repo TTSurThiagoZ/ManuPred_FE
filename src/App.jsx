@@ -4,10 +4,13 @@ import SplashScreen from "./splash/SplashScreen";
 import WelcomeScreen from "./components/intro/WelcomeScreen";
 import LoginScreen from "./components/auth/LoginScreen";
 import OAuth2Handler from "./components/auth/OAuth2Handler";
+import RequireRole from "./components/auth/RequireRole";
 import UserDashboard from "./components/chamados/UserDashboard";
 import NovoChamado from "./components/chamados/NovoChamado";
+import TecnicoDashboard from "./components/tecnico/TecnicoDashboard";
 import AdminChamados from "./components/admin/AdminChamados";
 import AdminUsuarios from "./components/admin/AdminUsuarios";
+import TecnicoFinalizados from "./components/tecnico/TecnicoFinalizados";
 
 function OnboardingFlow() {
   const [stage, setStage] = useState("splash");
@@ -73,6 +76,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userRole");
     navigate("/");
   };
 
@@ -80,10 +84,40 @@ function App() {
     <Routes>
       <Route path="/" element={<OnboardingFlow />} />
       <Route path="/oauth2/redirect" element={<OAuth2Handler />} />
-      <Route path="/chamados" element={<UserDashboard tickets={tickets} onLogout={handleLogout} />} />
-      <Route path="/chamados/novo" element={<NovoChamado onSubmit={addTicket} onLogout={handleLogout} />} />
-      <Route path="/admin/chamados" element={<AdminChamados onLogout={handleLogout} />} />
-      <Route path="/admin/usuarios" element={<AdminUsuarios onLogout={handleLogout} />} />
+
+      <Route path="/chamados" element={
+        <RequireRole allowed={["usuario"]}>
+          <UserDashboard tickets={tickets} onLogout={handleLogout} />
+        </RequireRole>
+      } />
+      <Route path="/chamados/novo" element={
+        <RequireRole allowed={["usuario"]}>
+          <NovoChamado onSubmit={addTicket} onLogout={handleLogout} />
+        </RequireRole>
+      } />
+
+      <Route path="/tecnico" element={
+        <RequireRole allowed={["tecnico"]}>
+          <TecnicoDashboard onLogout={handleLogout} />
+        </RequireRole>
+      } />
+
+      <Route path="/tecnico/finalizados" element={
+        <RequireRole allowed={["tecnico"]}>
+          <TecnicoFinalizados onLogout={handleLogout} />
+        </RequireRole>
+      } />
+
+      <Route path="/admin/chamados" element={
+        <RequireRole allowed={["admin"]}>
+          <AdminChamados onLogout={handleLogout} />
+        </RequireRole>
+      } />
+      <Route path="/admin/usuarios" element={
+        <RequireRole allowed={["admin"]}>
+          <AdminUsuarios onLogout={handleLogout} />
+        </RequireRole>
+      } />
     </Routes>
   );
 }
