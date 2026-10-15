@@ -8,9 +8,10 @@ import RequireRole from "./components/auth/RequireRole";
 import UserDashboard from "./components/chamados/UserDashboard";
 import NovoChamado from "./components/chamados/NovoChamado";
 import TecnicoDashboard from "./components/tecnico/TecnicoDashboard";
+import TecnicoFinalizados from "./components/tecnico/TecnicoFinalizados";
 import AdminChamados from "./components/admin/AdminChamados";
 import AdminUsuarios from "./components/admin/AdminUsuarios";
-import TecnicoFinalizados from "./components/tecnico/TecnicoFinalizados";
+import { ChamadosProvider } from "./context/ChamadosProvider";
 
 function OnboardingFlow() {
   const [stage, setStage] = useState("splash");
@@ -41,38 +42,8 @@ function OnboardingFlow() {
   return <LoginScreen onLogin={(data) => console.log("Login:", data)} />;
 }
 
-const initialTickets = [
-  {
-    id: "0512",
-    titulo: "Vazamento no encanamento do banheiro",
-    status: "andamento",
-    tipo: "Hidráulico",
-    local: "Sala 12",
-    patrimonio: "4821",
-    descricao: "Está vazando água constantemente embaixo da pia do banheiro da sala 12, formando poça no chão.",
-    anexos: 2,
-    abertoPor: "Ana Souza",
-    abertoPorId: "1043",
-    dataAbertura: "12/08/2026",
-  },
-];
-
 function App() {
-  const [tickets, setTickets] = useState(initialTickets);
   const navigate = useNavigate();
-
-  const addTicket = (data) => {
-    const novo = {
-      id: String(1000 + tickets.length + 1),
-      status: "aberto",
-      anexos: 0,
-      abertoPor: "Ana Souza",
-      abertoPorId: "1043",
-      dataAbertura: new Date().toLocaleDateString("pt-BR"),
-      ...data,
-    };
-    setTickets((prev) => [novo, ...prev]);
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -81,44 +52,45 @@ function App() {
   };
 
   return (
-    <Routes>
-      <Route path="/" element={<OnboardingFlow />} />
-      <Route path="/oauth2/redirect" element={<OAuth2Handler />} />
+    <ChamadosProvider>
+      <Routes>
+        <Route path="/" element={<OnboardingFlow />} />
+        <Route path="/oauth2/redirect" element={<OAuth2Handler />} />
 
-      <Route path="/chamados" element={
-        <RequireRole allowed={["usuario"]}>
-          <UserDashboard tickets={tickets} onLogout={handleLogout} />
-        </RequireRole>
-      } />
-      <Route path="/chamados/novo" element={
-        <RequireRole allowed={["usuario"]}>
-          <NovoChamado onSubmit={addTicket} onLogout={handleLogout} />
-        </RequireRole>
-      } />
+        <Route path="/chamados" element={
+          <RequireRole allowed={["usuario"]}>
+            <UserDashboard onLogout={handleLogout} />
+          </RequireRole>
+        } />
+        <Route path="/chamados/novo" element={
+          <RequireRole allowed={["usuario"]}>
+            <NovoChamado onLogout={handleLogout} />
+          </RequireRole>
+        } />
 
-      <Route path="/tecnico" element={
-        <RequireRole allowed={["tecnico"]}>
-          <TecnicoDashboard onLogout={handleLogout} />
-        </RequireRole>
-      } />
+        <Route path="/tecnico" element={
+          <RequireRole allowed={["tecnico"]}>
+            <TecnicoDashboard onLogout={handleLogout} />
+          </RequireRole>
+        } />
+        <Route path="/tecnico/finalizados" element={
+          <RequireRole allowed={["tecnico"]}>
+            <TecnicoFinalizados onLogout={handleLogout} />
+          </RequireRole>
+        } />
 
-      <Route path="/tecnico/finalizados" element={
-        <RequireRole allowed={["tecnico"]}>
-          <TecnicoFinalizados onLogout={handleLogout} />
-        </RequireRole>
-      } />
-
-      <Route path="/admin/chamados" element={
-        <RequireRole allowed={["admin"]}>
-          <AdminChamados onLogout={handleLogout} />
-        </RequireRole>
-      } />
-      <Route path="/admin/usuarios" element={
-        <RequireRole allowed={["admin"]}>
-          <AdminUsuarios onLogout={handleLogout} />
-        </RequireRole>
-      } />
-    </Routes>
+        <Route path="/admin/chamados" element={
+          <RequireRole allowed={["admin"]}>
+            <AdminChamados onLogout={handleLogout} />
+          </RequireRole>
+        } />
+        <Route path="/admin/usuarios" element={
+          <RequireRole allowed={["admin"]}>
+            <AdminUsuarios onLogout={handleLogout} />
+          </RequireRole>
+        } />
+      </Routes>
+    </ChamadosProvider>
   );
 }
 
