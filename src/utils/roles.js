@@ -33,3 +33,13 @@ export function getStoredRole() {
 export function setStoredRole(role) {
   localStorage.setItem("userRole", role);
 }
+
+export const PERSONAS = {
+  usuario: { role: "usuario", nome: "Ana Souza", id: "1043", cargo: "Usuário comum" },
+  tecnico: { role: "tecnico", nome: "Carlos Lima", id: "2001", cargo: "Técnico" },
+  admin: { role: "admin", nome: "Fernanda Costa", id: "3001", cargo: "Administradora" },
+};
+
+export function getPersona() {
+  return PERSONAS[getStoredRole()] ?? PERSONAS.usuario;
+}

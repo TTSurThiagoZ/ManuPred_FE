@@ -2,15 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppShell from "../layout/AppShell";
 import { goToNovoChamado } from "../../utils/navigation";
-
-const STATUS_META = {
-  aberto: { label: "Em aberto", badge: "bg-amber-100 text-amber-700" },
-  andamento: { label: "Em andamento", badge: "bg-blue-100 text-blue-700" },
-  externa: { label: "Aguard. externa", badge: "bg-purple-100 text-purple-700" },
-  concluido: { label: "Concluído", badge: "bg-emerald-100 text-emerald-700" },
-  finalizada: { label: "Finalizada", badge: "bg-slate-100 text-slate-600" },
-  rejeitada: { label: "Rejeitada", badge: "bg-red-100 text-red-700" },
-};
+import { useChamados } from "../../context/chamadosContext";
+import { getPersona } from "../../utils/roles";
+import { STATUS_META } from "../../utils/chamados";
 
 const FILTERS = [
   { key: "todos", label: "Todos" },
@@ -19,21 +13,25 @@ const FILTERS = [
   { key: "concluido", label: "Concluídos" },
 ];
 
-export default function UserDashboard({ tickets, onLogout }) {
+const isDone = (t) => t.status === "concluido" || t.status === "finalizada";
+
+export default function UserDashboard({ onLogout }) {
   const navigate = useNavigate();
+  const persona = getPersona();
+  const { chamados } = useChamados();
   const [filter, setFilter] = useState("todos");
 
-  const isDone = (t) => t.status === "concluido" || t.status === "finalizada";
+  const meus = chamados.filter((c) => c.abertoPor === persona.nome);
 
   const counts = {
-    todos: tickets.length,
-    aberto: tickets.filter((t) => t.status === "aberto").length,
-    andamento: tickets.filter((t) => t.status === "andamento").length,
-    concluido: tickets.filter(isDone).length,
+    todos: meus.length,
+    aberto: meus.filter((t) => t.status === "aberto").length,
+    andamento: meus.filter((t) => t.status === "andamento").length,
+    concluido: meus.filter(isDone).length,
   };
 
   const visibleTickets =
-    filter === "todos" ? tickets : filter === "concluido" ? tickets.filter(isDone) : tickets.filter((t) => t.status === filter);
+    filter === "todos" ? meus : filter === "concluido" ? meus.filter(isDone) : meus.filter((t) => t.status === filter);
 
   const handleNovoChamado = () => goToNovoChamado(navigate);
 

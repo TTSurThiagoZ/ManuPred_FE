@@ -6,7 +6,12 @@ export default function SplashScreen() {
       <div className="absolute -bottom-48 -left-32 w-[480px] h-[480px] rounded-full bg-[#843B0F] blur-[120px] opacity-50 pointer-events-none" />
 
       <img src="/kipper-logo.svg" alt="Kipper" className="relative z-10 w-20 h-20 mb-8 drop-shadow-xl" />
-      <h1 className="relative z-10 font-serif text-4xl text-white mb-2 leading-tight">Kipper</h1>
+      
+      {/* Classe text-center adicionada e <br /> inserido antes de Predial */}
+      <h1 className="relative z-10 font-serif text-4xl text-white mb-2 leading-tight text-center">
+        Sistema de Manutenção <br /> Predial
+      </h1>
+      
       <p className="relative z-10 font-body text-sm text-white/80 mb-10">Gestão de Manutenção</p>
 
       <div className="relative z-10 flex gap-2">

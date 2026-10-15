@@ -17,7 +17,7 @@ export default function WelcomeScreen({ onAdvance }) {
       </h1>
 
       <p className="relative z-10 font-body text-base text-white/80 max-w-[280px] mb-10">
-        Gestão e manutenção, sempre à disposição.
+        Gestão e manutenção.
       </p>
 
       <button
