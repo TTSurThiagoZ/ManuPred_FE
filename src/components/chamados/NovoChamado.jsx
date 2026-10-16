@@ -32,10 +32,41 @@ export default function NovoChamado({ onLogout }) {
   const [local, setLocal] = useState("");
   const [descricao, setDescricao] = useState("");
   const [patrimonio, setPatrimonio] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+
+  // Lê a imagem carregada e converte para Base64
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageUrl("");
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    criarChamado({ tipo, local, descricao, patrimonio, anexos: 0 }, persona);
+    
+    // Envia a imagem preenchendo todas as chaves possíveis para garantir que o contexto receba
+    criarChamado(
+      {
+        tipo,
+        local,
+        descricao,
+        patrimonio,
+        imageUrl: imageUrl,
+        foto: imageUrl,
+        imagem: imageUrl,
+        anexos: imageUrl ? 1 : 0,
+      },
+      persona
+    );
     navigate("/chamados");
   };
 
@@ -103,10 +134,38 @@ export default function NovoChamado({ onLogout }) {
           <p className={sectionLabelClass}>
             Anexos <span className="normal-case font-normal text-stone/70">(opcional)</span>
           </p>
-          <div className="border-2 border-dashed border-stone/25 rounded-2xl p-8 text-center font-body text-sm text-stone cursor-pointer hover:border-amber-600 hover:bg-cream/40 transition-colors mb-8">
-            <span className="material-symbols-outlined align-middle mr-2 text-[18px]">attach_file</span>
-            Clique ou arraste fotos/arquivos do problema
-          </div>
+
+          {imageUrl ? (
+            <div className="border border-stone/20 rounded-2xl p-4 bg-cream/30 space-y-3 mb-8">
+              <img
+                src={imageUrl}
+                alt="Pré-visualização do anexo"
+                className="w-full max-h-60 object-cover rounded-xl"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="font-body text-xs font-semibold px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-xl hover:bg-red-100 transition"
+                >
+                  Remover foto
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-8">
+              <label className="border-2 border-dashed border-stone/25 rounded-2xl p-8 text-center font-body text-sm text-stone cursor-pointer hover:border-amber-600 hover:bg-cream/40 transition-colors block">
+                <span className="material-symbols-outlined align-middle mr-2 text-[18px]">attach_file</span>
+                Clique para selecionar uma foto do problema
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          )}
 
           <div className="flex justify-end gap-3 pt-6 border-t border-stone/10">
             <button
