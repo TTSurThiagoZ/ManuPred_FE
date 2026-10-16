@@ -7,6 +7,7 @@ import OAuth2Handler from "./components/auth/OAuth2Handler";
 import RequireRole from "./components/auth/RequireRole";
 import UserDashboard from "./components/chamados/UserDashboard";
 import NovoChamado from "./components/chamados/NovoChamado";
+import ChamadoDetail from "./components/chamados/ChamadoDetail";
 import TecnicoDashboard from "./components/tecnico/TecnicoDashboard";
 import TecnicoFinalizados from "./components/tecnico/TecnicoFinalizados";
 import AdminChamados from "./components/admin/AdminChamados";
@@ -57,6 +58,7 @@ function App() {
         <Route path="/" element={<OnboardingFlow />} />
         <Route path="/oauth2/redirect" element={<OAuth2Handler />} />
 
+        {/* Rotas dos Chamados */}
         <Route path="/chamados" element={
           <RequireRole allowed={["usuario"]}>
             <UserDashboard onLogout={handleLogout} />
@@ -67,7 +69,9 @@ function App() {
             <NovoChamado onLogout={handleLogout} />
           </RequireRole>
         } />
+        <Route path="/chamados/:id" element={<ChamadoDetail />} />
 
+        {/* Rotas do Técnico */}
         <Route path="/tecnico" element={
           <RequireRole allowed={["tecnico"]}>
             <TecnicoDashboard onLogout={handleLogout} />
@@ -79,6 +83,7 @@ function App() {
           </RequireRole>
         } />
 
+        {/* Rotas do Admin */}
         <Route path="/admin/chamados" element={
           <RequireRole allowed={["admin"]}>
             <AdminChamados onLogout={handleLogout} />

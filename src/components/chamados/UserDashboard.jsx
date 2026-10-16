@@ -77,7 +77,8 @@ export default function UserDashboard({ onLogout }) {
             return (
               <article
                 key={t.id}
-                className={`bg-white rounded-2xl border border-stone/10 p-6 flex flex-col gap-4 transition-all ${
+                onClick={() => navigate(`/chamados/${t.id}`)}
+                className={`bg-white rounded-2xl border border-stone/10 p-6 flex flex-col gap-4 transition-all cursor-pointer ${
                   done ? "opacity-70 hover:opacity-100" : "shadow-sm hover:shadow-md hover:-translate-y-0.5"
                 }`}
               >

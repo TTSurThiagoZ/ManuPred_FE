@@ -18,6 +18,11 @@ export function ChamadosProvider({ children }) {
   const atualizar = (id, fn) =>
     setChamados((prev) => prev.map((c) => (c.id === id ? fn(c) : c)));
 
+  // Excluir chamado definitivamente do estado
+  const excluirChamado = (id) => {
+    setChamados((prev) => prev.filter((c) => String(c.id) !== String(id)));
+  };
+
   // Usuário abre um chamado novo
   const criarChamado = ({ tipo, local, descricao, patrimonio, anexos }, autor) => {
     setChamados((prev) => [
@@ -44,6 +49,18 @@ export function ChamadosProvider({ children }) {
       },
       ...prev,
     ]);
+  };
+
+  // Atualiza os dados editados de um chamado (exercício do professor)
+  const atualizarChamado = (id, dadosAtualizados, atorNome = "Usuário") => {
+    atualizar(id, (c) => ({
+      ...c,
+      ...dadosAtualizados,
+      historico: [
+        ...c.historico,
+        evento("Chamado editado", `${atorNome} atualizou as informações do chamado`),
+      ],
+    }));
   };
 
   // Muda o status de um chamado (usado pelo Kanban e pelo detalhe)
@@ -161,6 +178,8 @@ export function ChamadosProvider({ children }) {
       value={{
         chamados,
         criarChamado,
+        atualizarChamado,
+        excluirChamado,
         moverChamado,
         assumirChamado,
         atribuirChamado,
