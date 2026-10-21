@@ -1,7 +1,16 @@
-import { useState } from "react";
-import { ChamadosContext } from "./chamadosContext";
-import { SEED_CHAMADOS } from "../data/seedChamados";
-import { STATUS_META, STATUS_ENCERRADOS, dataHoje, dataHoraAgora } from "../utils/chamados";
+import React, { useState, createContext, useContext } from "react";
+import { SEED_CHAMADOS } from "../../data/seedChamados";
+import { STATUS_META, STATUS_ENCERRADOS, dataHoje, dataHoraAgora } from "../../utils/chamados";
+
+export const ChamadosContext = createContext(null);
+
+export function useChamados() {
+  const ctx = useContext(ChamadosContext);
+  if (!ctx) {
+    throw new Error("useChamados precisa ser usado dentro de <ChamadosProvider>");
+  }
+  return ctx;
+}
 
 function proximoId(lista) {
   const maior = lista.reduce((m, c) => Math.max(m, Number(c.id) || 0), 0);
@@ -23,17 +32,28 @@ export function ChamadosProvider({ children }) {
     setChamados((prev) => prev.filter((c) => String(c.id) !== String(id)));
   };
 
-  // Usuário abre um chamado novo
-  const criarChamado = ({ tipo, local, descricao, patrimonio, anexos }, autor) => {
+  // Usuário abre um chamado novo (captura a imagem em qualquer formato enviado)
+  const criarChamado = (dadosNovoChamado, autor) => {
+    // Pega a imagem de qualquer propriedade que o NovoChamado possa ter enviado
+    const imagemRecebida = 
+      dadosNovoChamado.imageUrl || 
+      dadosNovoChamado.foto || 
+      dadosNovoChamado.imagem || 
+      "";
+
     setChamados((prev) => [
       {
         id: proximoId(prev),
-        titulo: `${tipo} — ${local}`,
-        descricao,
-        tipo,
-        local,
-        patrimonio: (patrimonio ?? "").trim(),
-        anexos: anexos ?? 0,
+        titulo: `${dadosNovoChamado.tipo} — ${dadosNovoChamado.local}`,
+        descricao: dadosNovoChamado.descricao,
+        tipo: dadosNovoChamado.tipo,
+        local: dadosNovoChamado.local,
+        patrimonio: (dadosNovoChamado.patrimonio ?? "").trim(),
+        // Atribui a imagem a TODAS as chaves para o Detail reconhecer sem falhas
+        imageUrl: imagemRecebida,
+        foto: imagemRecebida,
+        imagem: imagemRecebida,
+        anexos: imagemRecebida ? 1 : (dadosNovoChamado.anexos ?? 0),
         status: "aberto",
         urgente: false,
         abertoPor: autor.nome,
@@ -51,19 +71,32 @@ export function ChamadosProvider({ children }) {
     ]);
   };
 
-  // Atualiza os dados editados de um chamado (exercício do professor)
+  // Atualiza os dados editados de um chamado
   const atualizarChamado = (id, dadosAtualizados, atorNome = "Usuário") => {
-    atualizar(id, (c) => ({
-      ...c,
-      ...dadosAtualizados,
-      historico: [
-        ...c.historico,
-        evento("Chamado editado", `${atorNome} atualizou as informações do chamado`),
-      ],
-    }));
+    atualizar(id, (c) => {
+      const imagemAtualizada = 
+        dadosAtualizados.imageUrl || 
+        dadosAtualizados.foto || 
+        dadosAtualizados.imagem || 
+        c.imageUrl || 
+        c.foto || 
+        c.imagem || 
+        "";
+
+      return {
+        ...c,
+        ...dadosAtualizados,
+        imageUrl: imagemAtualizada,
+        foto: imagemAtualizada,
+        imagem: imagemAtualizada,
+        historico: [
+          ...c.historico,
+          evento("Chamado editado", `${atorNome} atualizou as informações do chamado`),
+        ],
+      };
+    });
   };
 
-  // Muda o status de um chamado (usado pelo Kanban e pelo detalhe)
   const moverChamado = (id, novoStatus, ator) => {
     atualizar(id, (c) => {
       if (c.status === novoStatus) return c;
@@ -90,7 +123,6 @@ export function ChamadosProvider({ children }) {
     });
   };
 
-  // Técnico pega pra si um chamado em aberto
   const assumirChamado = (id, ator) => {
     atualizar(id, (c) => ({
       ...c,
@@ -103,7 +135,6 @@ export function ChamadosProvider({ children }) {
     }));
   };
 
-  // Admin define (ou troca) o responsável
   const atribuirChamado = (id, tecnico, ator) => {
     atualizar(id, (c) => {
       const novoStatus = c.status === "aberto" ? "andamento" : c.status;
@@ -173,9 +204,10 @@ export function ChamadosProvider({ children }) {
     }));
   };
 
-  return (
-    <ChamadosContext.Provider
-      value={{
+  return React.createElement(
+    ChamadosContext.Provider,
+    {
+      value: {
         chamados,
         criarChamado,
         atualizarChamado,
@@ -187,9 +219,8 @@ export function ChamadosProvider({ children }) {
         marcarUrgente,
         comentar,
         cancelarChamado,
-      }}
-    >
-      {children}
-    </ChamadosContext.Provider>
+      },
+    },
+    children
   );
 }

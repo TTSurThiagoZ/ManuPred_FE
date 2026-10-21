@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AppShell from "../layout/AppShell";
-import { useChamados } from "../../context/chamadosContext";
+import { useChamados } from "../../assets/context/chamadosContext";
 import { getPersona } from "../../utils/roles";
 import { TIPOS, LOCAIS } from "../../utils/chamados";
 
