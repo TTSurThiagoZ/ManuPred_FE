@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppShell from "../layout/AppShell";
 import { goToNovoChamado } from "../../utils/navigation";
-import { useChamados } from "../../context/chamadosContext";
+import { useChamados } from "../../assets/context/chamadosContext";
 import { getPersona } from "../../utils/roles";
 import { STATUS_META } from "../../utils/chamados";
 
