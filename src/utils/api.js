@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: 'http://10.5.36.6:8080',
+  baseURL: 'http://10.5.36.34:8080',
 });
 
 // Interceptor de Requisição: Injeta o Token JWT imediatamente
