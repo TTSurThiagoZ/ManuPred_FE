@@ -1,0 +1,145 @@
+:root {
+  /* Cores de fundo e gradiente */
+  --color-bg-base: #120d06; /* Um preto muito rico e quente */
+  --color-glow-spot: rgba(229, 169, 59, 0.18); /* O ponto de luz dourado central */
+  
+  /* Cores de destaque e texto */
+  --color-accent-gold: #e5a93b; /* O dourado rico */
+  --color-text-primary: #f5f5f7; /* Branco premium */
+  --color-text-secondary: rgba(245, 245, 247, 0.6); /* Branco suave */
+  
+  /* Tipografia */
+  --font-heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+}
+
+.splash-container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-base);
+  background-image: radial-gradient(circle at 50% 45%, var(--color-glow-spot) 0%, var(--color-bg-base) 70%);
+  overflow: hidden;
+  font-family: var(--font-body);
+}
+
+/* O ponto de luz ambiente central (centralizado) */
+.splash-glow {
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(229, 169, 59, 0.22) 0%, rgba(0, 0, 0, 0) 70%);
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  filter: blur(70px);
+  pointer-events: none;
+  animation: pulseGlow 5s ease-in-out infinite alternate;
+}
+
+/* Textura de ruído sutil no fundo (da imagem original) */
+.splash-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Insígnia com Glassmorphism (efeito de vidro jateado) */
+.splash-badge {
+  width: 100px;
+  height: 100px;
+  border-radius: 22px; /* Cantos arredondados mais suaves e premium */
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.splash-logo-img {
+  width: 52px;
+  height: 52px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+}
+
+.splash-title {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.splash-subtitle {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  margin-top: 0.4rem;
+  margin-bottom: 2.2rem;
+  letter-spacing: 0.03em;
+}
+
+/* O loader minimalista central (centralizado) */
+.splash-loader-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.splash-loader-icon {
+  width: 26px;
+  height: 26px;
+  opacity: 0.9;
+  animation: rotateLoader 1.5s linear infinite;
+  z-index: 1;
+}
+
+.splash-loader-text {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.03em;
+}
+
+@keyframes pulseGlow {
+  0% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.95); }
+  100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.08); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rotateLoader {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
