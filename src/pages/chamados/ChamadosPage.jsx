@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { solicitacaoService } from '../../shared/services/solicitacaoService';
+import { STATUS_META } from '../../utils/chamados';
 
 // Filtros mapeados conforme os Enums retornados pela API
 const FILTERS = [
