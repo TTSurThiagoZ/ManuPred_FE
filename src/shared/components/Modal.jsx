@@ -1,4 +1,4 @@
-// src/components/LoadingModal/index.jsx
+// Modal global de carregamento (Lottie) — aparece em toda requisição à API, em qualquer tela.
 import React from 'react';
 import { Lottie } from 'lottie-react';
 import loadingAnimation from '../../assets/loading.json'; // Seu arquivo Lottie
@@ -13,8 +13,9 @@ export const Modal = () => {
   return (
     <div className="loading-overlay">
       <div className="lottie-container">
-        <Lottie 
-          animationData={loadingAnimation} 
+        {/* No lottie-react 3.x a animação vai na prop "src" (a antiga "animationData" não existe mais) */}
+        <Lottie
+          src={loadingAnimation}
           loop={true} 
           autoplay={true}
         />

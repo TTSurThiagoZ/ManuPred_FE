@@ -1,19 +1,31 @@
+// Splash — rota: / (público)
+// Mostra a marca por 1 segundo e manda para a tela inicial da role ou para o /login.
+
 import { useEffect } from 'react';
 import { useUserStore } from '../../store/user';
 import { useNavigate } from 'react-router-dom';
+import { getPerfil } from '../../utils/perfis';
 
 export default function SplashScreen() {
   const fetchMe = useUserStore((state) => state.fetchMe);
-  
+
   const navigate = useNavigate();
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchMe().then(() => { navigate('/chamados'); }).catch(() => { navigate('/login'); });
+      // Sem token nem tenta o /me
+      if (!localStorage.getItem('token')) {
+        navigate('/login', { replace: true });
+        return;
+      }
+
+      fetchMe()
+        .then((user) => { navigate(getPerfil(user?.role).telaInicial, { replace: true }); })
+        .catch(() => { navigate('/login', { replace: true }); });
     }, 1000); // Executa após 1 segundo (1000 ms)
 
     // Limpa o temporizador se o componente for desmontado antes de 1s
     return () => clearTimeout(timer);
-  }, [fetchMe]);
+  }, [fetchMe, navigate]);
 
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#241F1A]">
@@ -22,12 +34,12 @@ export default function SplashScreen() {
       <div className="absolute -bottom-48 -left-32 w-[480px] h-[480px] rounded-full bg-[#843B0F] blur-[120px] opacity-50 pointer-events-none" />
 
       <img src="/kipper-logo.svg" alt="Kipper" className="relative z-10 w-20 h-20 mb-8 drop-shadow-xl" />
-      
+
       {/* Classe text-center adicionada e <br /> inserido antes de Predial */}
       <h1 className="relative z-10 font-serif text-4xl text-white mb-2 leading-tight text-center">
         Sistema de Manutenção <br /> Predial
       </h1>
-      
+
       <p className="relative z-10 font-body text-sm text-white/80 mb-10">Gestão de Manutenção</p>
 
       <div className="relative z-10 flex gap-2">

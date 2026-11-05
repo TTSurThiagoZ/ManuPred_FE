@@ -1,3 +1,5 @@
+// Service de chamados — /api/v1/solicitacoes (busca, detalhe, criação, status, prioridade, técnico).
+
 import { api } from "../../utils/api";
 
 
