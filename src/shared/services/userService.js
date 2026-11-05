@@ -1,3 +1,5 @@
+// Service de usuários — /api/v1/users (me, listagem, cadastro, remoção).
+
 import { api } from "../../utils/api";
 
 export const userService = {

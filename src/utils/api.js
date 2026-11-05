@@ -1,3 +1,5 @@
+// Instância Axios usada por todos os services (baseURL + token Bearer do localStorage).
+
 import axios from 'axios';
 
 export const api = axios.create({

@@ -1,3 +1,5 @@
+// Service de autenticação — /api/v1/auth (login, cadastro) e login via Firebase.
+
 import { api } from "../../utils/api";
 
 
