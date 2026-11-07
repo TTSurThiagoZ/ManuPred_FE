@@ -54,6 +54,9 @@ function App() {
 
           {/* Redirecionamento de segurança para rotas desconhecidas */}
           <Route path="*" element={<Navigate to="/" replace />} />
+
+          <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
+
         </Routes>
       </BrowserRouter>
     </LoadingProvider>
