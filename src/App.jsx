@@ -11,6 +11,7 @@ import ChamadoDetailPage from './pages/chamados/[id]/ChamadoDetailPage';
 import NovoChamadoPage from './pages/novochamado/NovoChamadoPage';
 import { LoadingProvider } from './context/ContextProvider';
 import { Modal } from './shared/components/Modal';
+import { OAuth2Redirect } from './shared/components/OAuth2Redirect';
 
 function App() {
   return (
@@ -32,9 +33,12 @@ function App() {
 
           {/* Detalhe do Chamado (com parâmetro dinâmico :id) */}
           <Route path="/chamados/:id" element={<ChamadoDetailPage />} />
-
+in
           {/* Redirecionamento de segurança para rotas desconhecidas */}
           <Route path="*" element={<Navigate to="/" replace />} />
+
+          <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
+
         </Routes>
       </BrowserRouter>
     </LoadingProvider>
