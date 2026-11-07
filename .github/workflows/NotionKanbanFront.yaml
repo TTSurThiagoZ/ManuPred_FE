@@ -1,0 +1,78 @@
+name: Sincronizar commits com o Kanban do Notion
+
+# Versão para o app Android (front-end).
+# A cada push na main, cada commit vira um card na coluna "Done" do Kanban.
+# Commits de merge são ignorados.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  notion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Criar cards no Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Lê os commits direto do arquivo do evento (nada do texto dos commits
+          # é interpolado no shell, o que evita injeção de comandos).
+          jq -c '(.commits // [])[] | select(.message | startswith("Merge") | not)' "$GITHUB_EVENT_PATH" |
+          while read -r commit; do
+            sha=$(echo "$commit" | jq -r '.id')
+
+            # O evento de push não traz a lista de arquivos; busca na API do GitHub.
+            files=$(curl -sS \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$sha" |
+              jq -c '[(.files // [])[].filename]')
+
+            payload=$(echo "$commit" | jq -c --arg db "$NOTION_DATABASE_ID" --argjson files "$files" '
+              # Regras do Tipo para o app Android (Kotlin):
+              #  - só arquivos de teste               -> QA
+              #  - qualquer código/tela do app         -> Front-end
+              #  - só build, CI ou Docker              -> OPS
+              #  - lista vazia ou outros arquivos      -> Front-end
+              def eh_teste: test("src/(test|androidTest)/|Test\\.(kt|java)$");
+              def eh_app:   (eh_teste | not) and test("\\.(kt|java)$|(^|/)res/|AndroidManifest\\.xml$");
+              def eh_ops:   test("^\\.github/|Dockerfile|docker-compose|\\.gradle(\\.kts)?$|^gradle/|gradlew|proguard|\\.properties$");
+              (if   ($files | length) == 0                  then "Front-end"
+               elif all($files[]; eh_teste)                  then "QA"
+               elif any($files[]; eh_app)                    then "Front-end"
+               elif any($files[]; eh_ops)                    then "OPS"
+               else "Front-end" end) as $tipo
+              | {
+                  parent: { database_id: $db },
+                  properties: {
+                    "Tarefa":      { title: [ { text: { content: (.message | split("\n")[0] | .[0:200]) } } ] },
+                    "Status":      { status: { name: "Done" } },
+                    "Responsável": { rich_text: [ { text: { content: .author.name } } ] },
+                    "Descrição":   { rich_text: [
+                                      { text: { content: ("Commit " + .id[0:7] + " · " + .timestamp[0:10] + " · " + ($files | length | tostring) + " arquivo(s) · ") } },
+                                      { text: { content: "ver no GitHub", link: { url: .url } } }
+                                    ] },
+                    "Tipo":        { select: { name: $tipo } }
+                  }
+                }')
+
+            # Guarda a resposta para mostrar o motivo exato se o Notion recusar.
+            resp=$(curl -sS -w '\n%{http_code}' -X POST "https://api.notion.com/v1/pages" \
+              -H "Authorization: Bearer $NOTION_TOKEN" \
+              -H "Notion-Version: 2022-06-28" \
+              -H "Content-Type: application/json" \
+              -d "$payload")
+            code="${resp##*$'\n'}"
+            body="${resp%$'\n'*}"
+            if [ "$code" -ge 300 ]; then
+              echo "::error::O Notion respondeu HTTP $code: $body"
+              exit 1
+            fi
+          done

@@ -1,6 +1,7 @@
+// Ponto de entrada do React — registra o service worker do Firebase e monta o <App />.
+
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import "./index.css";
 
