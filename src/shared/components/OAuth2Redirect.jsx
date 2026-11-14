@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export function OAuth2Redirect() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     try {
-      const searchParams = new URLSearchParams(location.search);
-      
+    
+      console.log(searchParams);
+
       // Obtém o token enviado via parâmetro de URL (ex: ?token=XYZ ou ?access_token=XYZ)
       const token = searchParams.get('token') || searchParams.get('access_token');
 
@@ -26,6 +27,8 @@ export function OAuth2Redirect() {
       setError('Erro ao processar o token de autenticação.');
     }
   }, [location, navigate]);
+
+
 
   if (error) {
     return (
