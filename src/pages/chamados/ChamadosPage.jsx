@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { solicitacaoService } from '../../shared/services/solicitacaoService';
 import { STATUS_META } from '../../utils/chamados';
+import { useUserStore } from '../../store/user';
 
 // Filtros mapeados conforme os Enums retornados pela API
 const FILTERS = [
@@ -23,6 +24,7 @@ export default function ChamadosPage({ onLogout }) {
   const navigate = useNavigate();
   const [chamados, setChamados] = useState([]);
   const [filter, setFilter] = useState("todos");
+  const user = useUserStore((state) => state.user); // Obtém os dados do usuário do Zustand
 
   // Carrega os chamados da API ao montar o componente
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function ChamadosPage({ onLogout }) {
         {/* Cabeçalho */}
         <div className="flex flex-col md:flex-row justify-between md:items-end gap-6 w-full">
           <div>
-            <h1 className="font-serif text-4xl text-charcoal mb-2">Meus Chamados</h1>
+            <h1 className="font-serif text-4xl text-charcoal mb-2">Meus Chamados (Chamados do {user?.nome || 'Usuário'})</h1>
             <p className="font-body text-sm text-stone">
               Acompanhe o andamento das suas solicitações de manutenção.
             </p>

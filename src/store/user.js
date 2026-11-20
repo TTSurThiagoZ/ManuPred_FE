@@ -6,6 +6,9 @@ export const useUserStore = create((set) => ({
   loading: false,
   error: null,
 
+  // Define token e dados de uma vez (ideal no login)
+      setAuth: (token, user) => set({ token, user }),
+
   fetchMe: async () => {
     set({ loading: true, error: null })
     try {
